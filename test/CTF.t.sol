@@ -21,10 +21,9 @@ contract CTFTest is Test {
         ctf = new ERC20("CTF Token", "CTF", 18);
 
         // 1. create Uniswap pair for tokens
-        IUniswapV2Factory uniswapFactory = IUniswapV2Factory(deployCode("out/UniswapV2Factory.sol/UniswapV2Factory.json", abi.encode(address(0))));
-          pair = IUniswapV2Pair(
-            uniswapFactory.createPair(address(ctf), address(usd))
-        );
+        IUniswapV2Factory uniswapFactory =
+            IUniswapV2Factory(deployCode("out/UniswapV2Factory.sol/UniswapV2Factory.json", abi.encode(address(0))));
+        pair = IUniswapV2Pair(uniswapFactory.createPair(address(ctf), address(usd)));
 
         // 2. create lending protocol
         lending = new LendingProtocol(address(ctf), address(usd), pair);
@@ -38,11 +37,7 @@ contract CTFTest is Test {
         uint256 victimAmount = 50_000 * 1e18;
         usd.mint(address(this), victimAmount);
         usd.approve(address(lending), victimAmount);
-        lending.deposit(
-            address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE),
-            address(usd),
-            victimAmount
-        );
+        lending.deposit(address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE), address(usd), victimAmount);
 
         // 5. create attacker with 10k of USD and CTF tokens each
         attacker = new Attacker(ctf, usd, pair, lending);
